@@ -35,10 +35,13 @@ namespace Microwave.Test.Integration
             _door = Substitute.For<IDoor>();
             _display = Substitute.For<IDisplay>();
             _light = Substitute.For<ILight>();
+            _cookcontroller = Substitute.For<ICookController>();
 
-            _cookcontroller = new CookController(_timer, _display, _powertube, _uut);
+
             _uut = new UserInterface(_powerbutton, _timebutton, _startcancelbutton, _door, _display, _light, _cookcontroller);
-       
+           
+
+
         }
 
         [TestCase(700, 99)]
@@ -57,10 +60,7 @@ namespace Microwave.Test.Integration
 
             _startcancelbutton.Pressed += Raise.Event();
 
-            _powertube.Received(1).TurnOn(power);
-            _timer.Received(1).Start(time * 60);
-
-            //Assert.AreEqual(_cookcontroller.isCooking, true);
+            _cookcontroller.Received(1).StartCooking(power, time * 60);
         }
 
 
@@ -81,7 +81,7 @@ namespace Microwave.Test.Integration
 
             _startcancelbutton.Pressed += Raise.Event();
 
-            _timer.DidNotReceive().Start(time * 60);
+            _timer.DidNotReceive().Start(Arg.Any<int>());
         }
 
         [Test]

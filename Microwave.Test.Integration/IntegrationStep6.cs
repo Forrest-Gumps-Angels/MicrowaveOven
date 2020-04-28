@@ -19,10 +19,11 @@ namespace Microwave.Test.Integration
         private IPowerTube _powertube;
 
 
-        private IButton _powerbutton,  _timebutton,  _startcancelbutton;
+        private IButton _powerbutton, _timebutton, _startcancelbutton;
         private IDoor _door;
         private IDisplay _display;
         private ILight _light;
+        private IOutput _output;
 
         [SetUp]
         public void Setup()
@@ -36,10 +37,10 @@ namespace Microwave.Test.Integration
             _display = Substitute.For<IDisplay>();
             _light = Substitute.For<ILight>();
             _cookcontroller = Substitute.For<ICookController>();
-
+            _output = Substitute.For<IOutput>();
 
             _uut = new UserInterface(_powerbutton, _timebutton, _startcancelbutton, _door, _display, _light, _cookcontroller);
-           
+
 
 
         }
@@ -93,13 +94,35 @@ namespace Microwave.Test.Integration
 
             _uut.CookingIsDone();
 
-            _display.Received().Clear();    
+            _display.Received().Clear();
             _light.Received().TurnOff();
         }
 
+        [Test]
+        public void UserInterface_DoorClosedAndOvenCooking_StopCookingOnDoorOpened_Success()
+        {
+            //Ensure state is cooking
+            _powerbutton.Pressed += Raise.Event();
+            _timebutton.Pressed += Raise.Event();
+            _startcancelbutton.Pressed += Raise.Event();
 
+            _door.Opened += Raise.Event();
 
+            _cookcontroller.Received().Stop();
+        }
 
+        [Test]
+        public void UserInterface_DoorClosedAndOvenCooking_StopCookingOnStartCancelButtonPressed_Success()
+        {
+            //Ensure state is cooking
+            _powerbutton.Pressed += Raise.Event();
+            _timebutton.Pressed += Raise.Event();
+            _startcancelbutton.Pressed += Raise.Event();
+
+            _startcancelbutton.Pressed += Raise.Event();
+
+            _cookcontroller.Received().Stop();
+        }
 
     }
 }

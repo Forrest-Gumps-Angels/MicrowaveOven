@@ -97,7 +97,21 @@ namespace Microwave.Test.Integration
             _light.Received().TurnOff();
         }
 
+        [Test]
+        public void UserInterface_DoorClosedAndOvenCooking_StopCookingOnDoorOpened_Success()
+        {
+            //Ensure state is cooking
+            _powerbutton.Pressed += Raise.Event();
+            _timebutton.Pressed += Raise.Event();
+            _startcancelbutton.Pressed += Raise.Event();
 
+            _door.Opened += Raise.Event();
+
+            _cookcontroller.Received().Stop();
+            _timer.Received().Stop();
+            _powertube.Received().TurnOff();
+            
+        }
 
 
 

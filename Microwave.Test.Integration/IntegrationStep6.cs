@@ -36,7 +36,7 @@ namespace Microwave.Test.Integration
             _display = Substitute.For<IDisplay>();
             _light = Substitute.For<ILight>();
 
-            _cookcontroller = new CookController(_timer, _display, _powertube);
+            _cookcontroller = new CookController(_timer, _display, _powertube, _uut);
             _uut = new UserInterface(_powerbutton, _timebutton, _startcancelbutton, _door, _display, _light, _cookcontroller);
        
         }
@@ -84,9 +84,17 @@ namespace Microwave.Test.Integration
             _timer.DidNotReceive().Start(time * 60);
         }
 
-        public void UserInterface_ClearAndTurnoff_WhenCookingIsDone(int power, int time)
+        [Test]
+        public void UserInterface_ClearAndTurnoff_WhenCookingIsDone()
         {
-            
+            _powerbutton.Pressed += Raise.Event();
+            _timebutton.Pressed += Raise.Event();
+            _startcancelbutton.Pressed += Raise.Event();
+
+            _timer.Expired += Raise.Event();
+
+            _display.Received().Clear();    
+            _light.Received().TurnOff();
         }
 
 

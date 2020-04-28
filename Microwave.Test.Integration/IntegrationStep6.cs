@@ -81,7 +81,7 @@ namespace Microwave.Test.Integration
 
             _startcancelbutton.Pressed += Raise.Event();
 
-            _timer.DidNotReceive().Start(Arg.Any<int>());
+            _cookcontroller.DidNotReceive().StartCooking(power, time * 60);
         }
 
         [Test]
@@ -91,15 +91,11 @@ namespace Microwave.Test.Integration
             _timebutton.Pressed += Raise.Event();
             _startcancelbutton.Pressed += Raise.Event();
 
-            _timer.Expired += Raise.Event();
+            _uut.CookingIsDone();
 
             _display.Received().Clear();    
             _light.Received().TurnOff();
         }
-
-
-
-
 
     }
 }

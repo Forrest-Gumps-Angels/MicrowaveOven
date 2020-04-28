@@ -24,7 +24,7 @@ namespace Microwave.Test.Integration
         [TestCase(10, 10)]
         [TestCase(30, 30)]
         [TestCase(60, 60)]
-        public void Display_ShowTime_ValidValues_Success(int _min, int _sec)
+        public void Display_ShowTime_ValidValues_CorrectOutput(int _min, int _sec)
         {
             _display.ShowTime(_min, _sec);
             _output.Received().OutputLine(Arg.Is<string>(str =>str.Contains($"Display shows: {_min:D2}:{_sec:D2}")));
@@ -35,14 +35,14 @@ namespace Microwave.Test.Integration
         [TestCase(30)]
         [TestCase(60)]
         [TestCase(99)]
-        public void Display_ShowPower_ValidValues_Success(int _power)
+        public void Display_ShowPower_ValidValues_CorrectOutput(int _power)
         {
             _display.ShowPower(_power);
             _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"Display shows: {_power} W")));
         }
 
         [Test]
-        public void Display_Clear_Success()
+        public void Display_Clear_CorrectOutput()
         {
             _display.Clear();
             _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Display cleared")));

@@ -20,14 +20,32 @@ namespace Microwave.Test.Integration
             _display = new Display(_output);
         }
 
-        [Test]
-        public void Success()
+        [TestCase(1, 1)]
+        [TestCase(10, 10)]
+        [TestCase(30, 30)]
+        [TestCase(60, 60)]
+        public void Display_ShowTime_ValidValues_Success(int _min, int _sec)
         {
-            int _min = 30;
-            int _sec = 10;
             _display.ShowTime(_min, _sec);
             _output.Received().OutputLine(Arg.Is<string>(str =>str.Contains($"Display shows: {_min:D2}:{_sec:D2}")));
         }
 
+        [TestCase(1)]
+        [TestCase(10)]
+        [TestCase(30)]
+        [TestCase(60)]
+        [TestCase(99)]
+        public void Display_ShowPower_ValidValues_Success(int _power)
+        {
+            _display.ShowPower(_power);
+            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"Display shows: {_power} W")));
+        }
+
+        [Test]
+        public void Display_Clear_Success()
+        {
+            _display.Clear();
+            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Display cleared")));
+        }
     }
 }

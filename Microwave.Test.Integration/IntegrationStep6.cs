@@ -41,8 +41,10 @@ namespace Microwave.Test.Integration
        
         }
 
+        [TestCase(700, 99)]
         [TestCase(500, 5)]
-        public void UserInterface_StartCooking(int power, int time)
+        [TestCase(50, 1)]
+        public void UserInterface_StartCooking_When_StartPressed(int power, int time)
         {
             for (int i = 0; i < power / 50; i++)
             {
@@ -56,10 +58,40 @@ namespace Microwave.Test.Integration
             _startcancelbutton.Pressed += Raise.Event();
 
             _powertube.Received(1).TurnOn(power);
-            _timer.Received(1).Start(time);
+            _timer.Received(1).Start(time * 60);
 
             //Assert.AreEqual(_cookcontroller.isCooking, true);
-
         }
+
+
+        // This test fails because the UserInterface is able to set timer above 2 digits.
+        [TestCase(700, 200)]
+        [TestCase(500, 300)]
+        [TestCase(50, 100000)]
+        public void UserInterface_NotSetTimeOver2Digits(int power, int time)
+        {
+            for (int i = 0; i < power / 50; i++)
+            {
+                _powerbutton.Pressed += Raise.Event();
+            }
+            for (int i = 0; i < time; i++)
+            {
+                _timebutton.Pressed += Raise.Event();
+            }
+
+            _startcancelbutton.Pressed += Raise.Event();
+
+            _timer.DidNotReceive().Start(time * 60);
+        }
+
+        public void UserInterface_ClearAndTurnoff_WhenCookingIsDone(int power, int time)
+        {
+            
+        }
+
+
+
+
+
     }
 }

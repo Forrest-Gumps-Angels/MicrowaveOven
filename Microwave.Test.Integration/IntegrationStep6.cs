@@ -41,15 +41,19 @@ namespace Microwave.Test.Integration
        
         }
 
-        [TestCase(501, 501)]
+        [TestCase(500, 5)]
         public void UserInterface_StartCooking(int power, int time)
         {
-            _powerbutton.Pressed += Raise.Event();
-            _timebutton.Pressed += Raise.Event();
+            for (int i = 0; i < power / 50; i++)
+            {
+                _powerbutton.Pressed += Raise.Event();
+            }
+            for (int i = 0; i < time; i++)
+            {
+                _timebutton.Pressed += Raise.Event();
+            }
+
             _startcancelbutton.Pressed += Raise.Event();
-
-
-
 
             _powertube.Received(1).TurnOn(power);
             _timer.Received(1).Start(time);

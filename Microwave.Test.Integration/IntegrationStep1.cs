@@ -21,14 +21,14 @@ namespace Microwave.Test.Integration
         }
 
         [Test]
-        public void TurnLightOn_LightIsAlreadyOff_OutputIsExped()
+        public void TurnLightOn_LightIsOff_OutputPrintsExpectedString()
         {
             _light.TurnOn();
             _output.Received().OutputLine(Arg.Is<string>(str =>str.Contains("Light is turned on")));
         }
 
         [Test]
-        public void TurnLightOn_LightIsOn_Failed()
+        public void TurnLightOn_LightIsAlreadyOn_OutputOnly()
         {
             _light.TurnOn();
             _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));

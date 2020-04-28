@@ -21,25 +21,33 @@ namespace Microwave.Test.Integration
         }
 
         [Test]
-        public void TurnLightOn_LightIsOff_OutputPrintsExpectedString()
+        public void Light_TurnOn_LightIsOff_OutputLinePrintsExpectedString()
         {
             _light.TurnOn();
             _output.Received().OutputLine(Arg.Is<string>(str =>str.Contains("Light is turned on")));
         }
 
         [Test]
-        public void TurnLightOn_LightIsAlreadyOn_OutputOnly()
+        public void Light_TurnOn_AlreadyOn_OutputLineOnlyCalledOnceWithExpectedString()
         {
             _light.TurnOn();
-            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));
+            _light.TurnOn();
+            _output.Received(1).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));
         }
 
         [Test]
-        public void TurnLightOff_LightIsOn_OutputIsValid()
+        public void Light_TurnOff_LightIsOn_OutputLinePrintsExpectedString()
         {
+            _light.TurnOn();
             _light.TurnOff();
             _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
         }
 
+        [Test]
+        public void Light_TurnOff_LightIsOff_OutputLineOnlyCalledOnceWithExpectedString()
+        {
+            _light.TurnOff();
+            _output.Received(0).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
+        }
     }
 }

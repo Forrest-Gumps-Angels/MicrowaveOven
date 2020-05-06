@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using MicrowaveOvenClasses.Boundary;
 using MicrowaveOvenClasses.Interfaces;
 using NSubstitute;
@@ -12,11 +13,14 @@ namespace Microwave.Test.Integration
     {
         private Light _light;
         private  IOutput _output;
+        private StringWriter str;
 
         [SetUp]
         public void Setup()
         {
-            _output = Substitute.For<IOutput>();
+            str = new StringWriter();
+            Console.SetOut(str);
+            _output = new Output();
             _light = new Light(_output);
         }
 
@@ -24,7 +28,8 @@ namespace Microwave.Test.Integration
         public void Light_TurnOn_LightIsOff_OutputLinePrintsExpectedString()
         {
             _light.TurnOn();
-            _output.Received().OutputLine(Arg.Is<string>(str =>str.Contains("Light is turned on")));
+            Assert.That(str.ToString().Contains("Light is turned on"));
+            //_output.Received().OutputLine(Arg.Is<string>(str =>str.Contains("Light is turned on")));
         }
 
         [Test]
@@ -32,7 +37,8 @@ namespace Microwave.Test.Integration
         {
             _light.TurnOn();
             _light.TurnOn();
-            _output.Received(1).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));
+            Assert.That(str.ToString().Contains("Light is turned on"));
+            //_output.Received(1).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));
         }
 
         [Test]
@@ -40,14 +46,16 @@ namespace Microwave.Test.Integration
         {
             _light.TurnOn();
             _light.TurnOff();
-            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
+            Assert.That(str.ToString().Contains("Light is turned off"));
+            //_output.Received().OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
         }
 
         [Test]
         public void Light_TurnOff_LightIsOff_OutputLineOnlyCalledOnceWithExpectedString()
         {
             _light.TurnOff();
-            _output.Received(0).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
+            Assert.That(str.ToString().Contains("Light is turned off"));
+            //_output.Received(0).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
         }
     }
 }

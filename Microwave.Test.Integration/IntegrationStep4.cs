@@ -30,12 +30,10 @@ namespace Microwave.Test.Integration
 
             _display = new Display(_output);
             _powerTube = new PowerTube(_output);
-            _uut = new CookController(_timer, _display, _powerTube);
+            _uut = new CookController(_timer, _display, _powerTube,_userInterface);
         }
 
         [TestCase(1, 1)]
-        [TestCase(10, 10)]
-        [TestCase(50, 50)]
         [TestCase(100, 100)]
         public void CookController_StartCooking_ValidValues_CorrectOutput(int power, int time)
         {
@@ -45,9 +43,7 @@ namespace Microwave.Test.Integration
         }
 
         [TestCase(0)]
-        [TestCase(-100)]
         [TestCase(101)]
-        [TestCase(200)]
         public void CookController_StartCooking_InvalidValues_ExceptionThrown(int power)
         {
             Assert.That(() => _uut.StartCooking(power, 1), Throws.TypeOf<ArgumentOutOfRangeException>());
@@ -84,10 +80,10 @@ namespace Microwave.Test.Integration
         }
 
         [Test]
-        public void CookController_OnTimerËxpired_CorrectOutput()
+        public void CookController_OnTimerExpired_CorrectOutput()
         {
-            //_uut.StartCooking(50, 20);
-            //_timer.TimeRemaining.Returns(1);
+            _uut.StartCooking(50, 1);
+            //_timer.TimeRemaining.Returns(0);
             _timer.Expired += Raise.Event();
             _output.Received().OutputLine(Arg.Is<string>("PowerTube turned off"));
         }

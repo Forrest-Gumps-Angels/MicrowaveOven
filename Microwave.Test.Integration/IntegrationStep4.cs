@@ -2,6 +2,7 @@
 using MicrowaveOvenClasses.Controllers;
 using MicrowaveOvenClasses.Interfaces;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -32,34 +33,63 @@ namespace Microwave.Test.Integration
             _uut = new CookController(_timer, _display, _powerTube);
         }
 
-        // Integrationtest CookController - Powertube //
         [TestCase(1, 1)]
         [TestCase(10, 10)]
         [TestCase(50, 50)]
         [TestCase(100, 100)]
-        public void Cookcontroller_StartCooking_ValidValues_CorrectOutput(int power, int time)
+        public void CookController_StartCooking_ValidValues_CorrectOutput(int power, int time)
         {
             _uut.StartCooking(power, time);
 
             _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"PowerTube works with {power}")));
         }
 
-
-        [Test]
-        public void Cookcontroller_Stop_CorrectOutput()
+        [TestCase(0)]
+        [TestCase(-100)]
+        [TestCase(101)]
+        [TestCase(200)]
+        public void CookController_StartCooking_InvalidValues_ExceptionThrown(int power)
         {
-            _uut.Stop();
-
-            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"PowerTube turned off")));
+            Assert.That(() => _uut.StartCooking(power, 1), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
-        [TestCase(50)]
-        public void Cookcontroller_OnTimerTick_CorrectOutput(int time)
+        [Test]
+        public void Cookcontroller_StartCooking_AlreadyOn_ApplicationException()
         {
-            _timer.TimerTick += Raise.Event();
-            
+            _uut.StartCooking(50, 30);
+            Assert.That(() => _uut.StartCooking(50, 30), Throws.TypeOf<ApplicationException>());
+        }
 
-            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"PowerTube turned off")));
+        [TestCase(1, 1)]
+        [TestCase(10, 10)]
+        [TestCase(50, 50)]
+        [TestCase(100, 100)]
+        public void CookController_Stop_CorrectOutput(int power, int time)
+        {
+            _uut.StartCooking(power, time);
+            _uut.Stop();
+
+            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains("PowerTube turned off")));
+        }
+
+        [TestCase(1)]
+        [TestCase(10)]
+        [TestCase(30)]
+        [TestCase(59)]
+        public void CookController_OnTimerTick_CorrectOutput(int timeRemaining)
+        {
+            _timer.TimeRemaining.Returns(timeRemaining);
+            _timer.TimerTick += Raise.Event();
+            _output.Received().OutputLine(Arg.Is<string>(str => str.Contains($"Display shows: 00:{timeRemaining:D2}")));
+        }
+
+        [Test]
+        public void CookController_OnTimerËxpired_CorrectOutput()
+        {
+            //_uut.StartCooking(50, 20);
+            //_timer.TimeRemaining.Returns(1);
+            _timer.Expired += Raise.Event();
+            _output.Received().OutputLine(Arg.Is<string>("PowerTube turned off"));
         }
     }
 }

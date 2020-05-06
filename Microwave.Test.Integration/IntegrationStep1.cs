@@ -12,7 +12,7 @@ namespace Microwave.Test.Integration
     public class IntegrationStep1
     {
         private Light _light;
-        private  IOutput _output;
+        private Output _output;
         private StringWriter str;
 
         [SetUp]
@@ -29,7 +29,6 @@ namespace Microwave.Test.Integration
         {
             _light.TurnOn();
             Assert.That(str.ToString().Contains("Light is turned on"));
-            //_output.Received().OutputLine(Arg.Is<string>(str =>str.Contains("Light is turned on")));
         }
 
         [Test]
@@ -38,7 +37,6 @@ namespace Microwave.Test.Integration
             _light.TurnOn();
             _light.TurnOn();
             Assert.That(str.ToString().Contains("Light is turned on"));
-            //_output.Received(1).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned on")));
         }
 
         [Test]
@@ -54,8 +52,7 @@ namespace Microwave.Test.Integration
         public void Light_TurnOff_LightIsOff_OutputLineOnlyCalledOnceWithExpectedString()
         {
             _light.TurnOff();
-            Assert.That(str.ToString().Contains("Light is turned off"));
-            //_output.Received(0).OutputLine(Arg.Is<string>(str => str.Contains("Light is turned off")));
+            Assert.IsFalse(str.ToString().Contains("Light is turned off"));
         }
     }
 }
